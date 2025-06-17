@@ -1,6 +1,0 @@
-ts_fuzzy_node:
-  ros__parameters:
-    dist_range: 6.0
-    weight_1: 0.0
-    weight_2: 1.0
-    weight_3: 2.0
