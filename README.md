@@ -1,89 +1,67 @@
-# fuzzy_controller
+# fuzzy controller
+ROS2 package for fuzzy control.
 
-## Overview
+This package uses:
+- Fuzzy membership function for trigonometric functions
 
-This package implements a Fuzzy Self-Tuning PID Controller in ROS2 C++ for attitude control using IMU yaw angle feedback. The controller uses fuzzy logic to adaptively tune PID parameters based on error and error derivative.
+![fuzzy membership function](image/fuzzy_membership.png)
 
-## Mathematical Theory
+- Fuzzy controller
 
-### 1. PID Control Foundation
+![fuzzy membership function](image/fuzzy_controller.png)
 
-The classical PID controller output is given by:
+- C++ Program generated from chatGPT
 
-$$u(t) = K_p e(t) + K_i \int_0^t e(\tau) d\tau + K_d \frac{de(t)}{dt}$$
+![fuzzy membership function](image/fuzzy_chatGPT.png)
 
-where:
-- $u(t)$: control output
-- $e(t) = r(t) - y(t)$: error signal
-- $r(t)$: reference (target) signal
-- $y(t)$: plant output (actual yaw angle)
-- $K_p, K_i, K_d$: proportional, integral, and derivative gains
+## Requirements
+- Linux OS
+    - Ubuntu 20.04 Laptop PC
+- ROS
+    - Foxy Fitzroy
 
-### 2. Discrete-Time Implementation
+## Install & Build
+The following commands download a package from a remote repository and install it in your colcon workspace.
 
-For digital implementation with sampling time $T_s$:
+```
+mkdir -p ~/manta_ws/src
+cd ~/manta_ws/src
+git clone https://github.com/tasada038/fuzzy_controller.git
+cd ~/manta_ws && colcon build --symlink-install
+```
 
-$$u[k] = K_p e[k] + K_i T_s \sum_{j=0}^k e[j] + K_d \frac{e[k] - e[k-1]}{T_s}$$
+## Usage
+1. Interactive fuzzy control
+```
+ros2 run fuzzy_controller ts_fuzzy_test1
+```
 
-### 3. Fuzzy Logic System
+2. Display Iuput Control 'u(t)' for specified distance
+```
+ros2 run fuzzy_controller ts_fuzzy_test1
+```
 
-#### 3.1 Fuzzy Sets and Membership Functions
+3. TS Fuzzy controller for /scan topic input
+```
+ros2 run fuzzy_controller ts_fuzzy_controller
+```
 
-The fuzzy system uses triangular membership functions for input variables:
+/scan from Realsense D435 is used as an example entry for the /scan topic.
 
-$$\mu_{A_i}(x) = \max\left(0, 1 - \frac{|x - c_i|}{w_i}\right)$$
+### ts_fuzzy_controller parameter
+The parameters for the ts_fuzzy_controller are as follows.
+```
+$ ros2 param list
+/ts_fuzzy_node:
+  dist_max
+  dist_mid
+  dist_min
+  dist_range
+  use_sim_time
+  weight_1
+  weight_2
+  weight_3
+```
 
-where $c_i$ is the center and $w_i$ is the width of the $i$-th membership function.
-
-#### 3.2 Input Variables
-
-**Error**: $e[k] = \theta_{target} - \theta_{actual}$
-
-**Error Derivative**: $\dot{e}[k] = \frac{e[k] - e[k-1]}{T_s}$
-
-#### 3.3 Linguistic Variables
-
-Both error and error derivative are fuzzified using seven linguistic terms:
-
-- **NB**: Negative Big
-- **NM**: Negative Medium
-- **NS**: Negative Small
-- **ZO**: Zero
-- **PS**: Positive Small
-- **PM**: Positive Medium
-- **PB**: Positive Big
-
-#### 3.4 Fuzzy Rule Base
-
-The fuzzy rules follow the general form:
-
-$$\text{IF } e \text{ is } A_i \text{ AND } \dot{e} \text{ is } B_j \text{ THEN } K_p \text{ is } C_{ij}^{Kp}, K_i \text{ is } C_{ij}^{Ki}, K_d \text{ is } C_{ij}^{Kd}$$
-
-#### 3.5 Inference and Defuzzification
-
-Update adaptive gains:
-$$
-K_p = K_p^{\prime} + \Delta K_p \\
-K_i = K_i^{\prime} + \Delta K_i \\
-K_d = K_d^{\prime} + \Delta K_d
-$$
-
-Using Mamdani inference with center of gravity defuzzification:
-
-$$\Delta K_p = \frac{\sum_{i,j} \mu_{A_i}(e) \cdot \mu_{B_j}(\dot{e}) \cdot K_p^{(i,j)}}{\sum_{i,j} \mu_{A_i}(e) \cdot \mu_{B_j}(\dot{e})}$$
-
-$$\Delta K_i = \frac{\sum_{i,j} \mu_{A_i}(e) \cdot \mu_{B_j}(\dot{e}) \cdot K_i^{(i,j)}}{\sum_{i,j} \mu_{A_i}(e) \cdot \mu_{B_j}(\dot{e})}$$
-
-$$\Delta K_d = \frac{\sum_{i,j} \mu_{A_i}(e) \cdot \mu_{B_j}(\dot{e}) \cdot K_d^{(i,j)}}{\sum_{i,j} \mu_{A_i}(e) \cdot \mu_{B_j}(\dot{e})}$$
-
-### 4. Output Saturation
-
-The final control output is saturated to the range $[-1, 1]$:
-
-$$u_{final} = \text{sat}(u, [-1, 1])$$
-
-
-## Appendi
-
-1. Fuzzy Self-Tuning PID Control of Hydrogen-Driven Pneumatic
-Artificial Muscle Actuator
+## License
+This repository is licensed under the Apache 2.0, see LICENSE for details.
