@@ -62,11 +62,10 @@ $$\text{IF } e \text{ is } A_i \text{ AND } \dot{e} \text{ is } B_j \text{ THEN 
 #### 3.5 Inference and Defuzzification
 
 Update adaptive gains:
-$$
-K_p = K_p^{\prime} + \Delta K_p \\
-K_i = K_i^{\prime} + \Delta K_i \\
-K_d = K_d^{\prime} + \Delta K_d
-$$
+$$K_p = K_p^{\prime} + \Delta K_p$$
+$$K_i = K_i^{\prime} + \Delta K_i$$
+$$K_d = K_d^{\prime} + \Delta K_d$$
+
 
 Using Mamdani inference with center of gravity defuzzification:
 
@@ -83,7 +82,7 @@ The final control output is saturated to the range $[-1, 1]$:
 $$u_{final} = \text{sat}(u, [-1, 1])$$
 
 
-## Appendi
+## Appendix
 
 1. Fuzzy Self-Tuning PID Control of Hydrogen-Driven Pneumatic
 Artificial Muscle Actuator# fuzzy_controller
